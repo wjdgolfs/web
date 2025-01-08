@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Emotional Diary</title>
+  <style>
+    body {
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .diary-container {
+      padding: 40px;
+      width: 450px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      margin-bottom: 40px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      text-align: right;
+      color: #333;
+      line-height: 1.2;
+    }
+
+    .calendar-content {
+      background: white;
+      border-radius: 25px;
+      padding: 30px;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .month-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 30px;
+    }
+
+    .month-left {
+      display: flex;
+      align-items: baseline;
+    }
+
+    .month-number {
+      font-size: 60px;
+      font-weight: bold;
+      line-height: 1;
+      margin-right: 15px;
+    }
+
+    .month-info {
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .mini-calendars {
+      display: flex;
+      gap: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 15px;
+      text-align: center;
+    }
+
+    .weekday {
+      font-size: 14px;
+      padding-bottom: 20px;
+    }
+
+    .day {
+      padding: 8px;
+      font-size: 16px;
+      position: relative;
+    }
+    .emotion-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      overflow: hidden;  /* 이미지가 원 밖으로 넘어가지 않도록 설정 */
+    }
+
+    .emotion-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;  /* 이미지가 원 안에 꽉 차도록 설정 */
+    }
+
+    .sunday {
+      color: #FF0000;
+    }
+
+    .emotion-circle {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .save-button {
+      background: white;
+      border: 2px solid #666;
+      border-radius: 50px;
+      padding: 12px 60px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .save-button:hover {
+      background-color: #f5f5f5;
+    }
+    .close-button {
+      background: white;
+      border: 1px solid #666;
+      border-radius: 50px;
+      padding: 8px 40px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: block;
+      margin: 20px auto;
+    }
+
+    .close-button:hover {
+      background-color: #f5f5f5;
+    }
+  </style>
+  <script>
+    function openPopup() {
+      const popup = document.createElement('div');
+      popup.className = 'popup';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'popup-overlay';
+
+      // 버튼 생성 및 클릭 이벤트 핸들러 추가
+      const closeButton = document.createElement('button');
+      closeButton.className = 'close-button';
+      closeButton.textContent = '뒤로';
+      closeButton.addEventListener('click', function() {
+        document.body.removeChild(popup);
+        document.body.removeChild(overlay);
+      });
+
+      popup.appendChild(closeButton);
+
+      const styles = `
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            z-index: 1000;
+            min-width: 300px;
+            min-height: 200px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .close-button {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border: 1px solid #666;
+            border-radius: 50px;
+            padding: 8px 40px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            background-color: #f5f5f5;
+        }
+    `;
+
+      const styleSheet = document.createElement('style');
+      styleSheet.textContent = styles;
+      document.head.appendChild(styleSheet);
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(popup);
+    }
+
+  </script>
+</head>
+<body>
+<div class="diary-container">
+  <div class="header">
+    <div class="title">EMOTIONAL<br>DIARY</div>
+  </div>
+
+  <div class="calendar-content">
+    <div class="month-header">
+      <div class="month-left">
+        <div class="month-number">1</div>
+        <div class="month-info">
+          JANUARY<br>2025
+        </div>
+      </div>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="weekday sunday">SUN</div>
+      <div class="weekday">MON</div>
+      <div class="weekday">TUE</div>
+      <div class="weekday">WED</div>
+      <div class="weekday">THU</div>
+      <div class="weekday">FRI</div>
+      <div class="weekday">SAT</div>
+
+      <div class="day"></div>
+      <div class="day"></div>
+      <div class="day">
+        <div class="emotion-circle happy" onclick="openPopup()">
+          <img src="free-icon-sunglasses-3525132.png" alt="happy">
+        </div>
+      </div>
+      <div class="day">
+        <div class="emotion-circle sad" onclick="openPopup()">
+          <img src="free-icon-sweat-3525093.png" alt="happy">
+        </div>
+      </div>
+      <div class="day">
+        <div class="emotion-circle angry" onclick="openPopup()">
+          <img src="free-icon-angry-face-3524806.png" alt="happy">
+        </div>
+      </div>
+      <div class="day">4</div>
+      <div class="day">5</div>
+
+      <div class="day sunday">6</div>
+      <div class="day">7</div>
+      <div class="day">8</div>
+      <div class="day">9</div>
+      <div class="day">10</div>
+      <div class="day">11</div>
+      <div class="day">12</div>
+
+      <div class="day sunday">13</div>
+      <div class="day">14</div>
+      <div class="day">15</div>
+      <div class="day">16</div>
+      <div class="day">17</div>
+      <div class="day">18</div>
+      <div class="day">19</div>
+
+      <div class="day sunday">20</div>
+      <div class="day">21</div>
+      <div class="day">22</div>
+      <div class="day">23</div>
+      <div class="day">24</div>
+      <div class="day">25</div>
+      <div class="day">26</div>
+
+      <div class="day sunday">27</div>
+      <div class="day">28</div>
+      <div class="day">29</div>
+      <div class="day">30</div>
+      <div class="day">31</div>
+      <div class="day"></div>
+      <div class="day"></div>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <button class="save-button">BACK</button>
+  </div>
+</body>
+</html>
